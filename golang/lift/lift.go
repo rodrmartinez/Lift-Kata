@@ -81,19 +81,29 @@ func (s *System) MoveToRequest() (output string) {
 		reverseLiftFloors(s.floors)
 	}
 	output += PrintLiftStatus(s)
-
 	return
 }
 
 // MoveToCall ..
 func (s *System) MoveToCall() (output string) {
+	output += PrintLiftStatus(s)
+	var responder Lift
 	for _, call := range s.calls {
-		for _, lift := range s.lifts {
-			if lift.Floor != call.Floor {
-				s.AddRequest(Request{lift.ID, call.Floor})
-				output = s.MoveToRequest()
+		responder = s.lifts[0]
+		for i, lift := range s.lifts {
+			if responder.Floor != lift.Floor {
+				if lift.Floor > call.Floor {
+					responder = s.lifts[i]
+					reverseLiftFloors(s.floors)
+				} else if lift.Floor < call.Floor {
+					responder = s.lifts[i]
+					reverseLiftFloors(s.floors)
+				}
 			}
 		}
+		s.AddRequest(Request{responder.ID, call.Floor})
+		reverseLiftFloors(s.floors)
+		output += s.MoveToRequest()
 	}
 	return
 }

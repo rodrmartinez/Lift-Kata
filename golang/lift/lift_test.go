@@ -109,3 +109,17 @@ func TestMoveManyLiftsToRequests(t *testing.T) {
 
 	approvaltests.VerifyString(t, output)
 }
+
+func TestMoveManyToCall(t *testing.T) {
+
+	liftSystem := lift.NewSystem()
+	liftA := lift.Lift{"A", 3, []int{}, false}
+	liftB := lift.Lift{"B", 2, []int{}, false}
+
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.AddLifts(liftA, liftB)
+	liftSystem.AddCalls(lift.Call{0, lift.Up})
+	output := liftSystem.MoveToCall()
+
+	approvaltests.VerifyString(t, output)
+}
