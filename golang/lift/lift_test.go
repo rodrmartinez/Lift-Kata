@@ -31,3 +31,14 @@ func TestMoveOneToRequest(t *testing.T) {
 
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+func TestMoveToRequest(t *testing.T) {
+
+	liftSystem := lift.NewSystem()
+	liftA := lift.Lift{"A", 0, []int{3}, false}
+
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.AddLifts(liftA)
+	liftSystem.MoveToRequest()
+
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}

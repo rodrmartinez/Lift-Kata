@@ -65,6 +65,18 @@ func (s *System) AddRequest(request Request) {
 	}
 }
 
+// MovetoRequest ..
+func (s *System) MoveToRequest() {
+	for i, lift := range s.lifts {
+		for _, request := range lift.Requests {
+			for s.lifts[i].Floor != request {
+				s.lifts[i].Tick()
+			}
+		}
+		s.lifts[i].Tick() //Open doors
+	}
+}
+
 // CallsFor ..
 func (s System) CallsFor(floor int) (calls []Call) {
 	calls = []Call{}
