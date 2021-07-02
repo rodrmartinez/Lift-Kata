@@ -65,28 +65,35 @@ func (s *System) AddRequest(request Request) {
 	}
 }
 
-// MovetoRequest ..
-func (s *System) MoveToRequest() {
+// MoveToRequest ..
+func (s *System) MoveToRequest() (output string) {
 	for i, lift := range s.lifts {
+		output += PrintLiftStatus(s)
 		for _, request := range lift.Requests {
 			for s.lifts[i].Floor != request {
 				s.lifts[i].Tick()
+				reverseLiftFloors(s.floors)
+				output += PrintLiftStatus(s)
 			}
 		}
 		s.lifts[i].Tick() //Open doors
+		reverseLiftFloors(s.floors)
+		output += PrintLiftStatus(s)
 	}
+	return
 }
 
-// MovetoCall ..
-func (s *System) MoveToCall() {
+// MoveToCall ..
+func (s *System) MoveToCall() (output string) {
 	for _, call := range s.calls {
 		for _, lift := range s.lifts {
 			if lift.Floor != call.Floor {
 				s.AddRequest(Request{lift.ID, call.Floor})
-				s.MoveToRequest()
+				output = s.MoveToRequest()
 			}
 		}
 	}
+	return
 }
 
 // CallsFor ..
@@ -101,7 +108,7 @@ func (s System) CallsFor(floor int) (calls []Call) {
 }
 
 // Tick ..
-func (s System) Tick() {
+func (s *System) Tick() {
 	for i, _ := range s.lifts {
 		s.lifts[i].Tick()
 	}

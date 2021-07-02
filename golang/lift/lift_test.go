@@ -31,16 +31,16 @@ func TestMoveOneToRequest(t *testing.T) {
 
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
-func TestMoveToRequest(t *testing.T) {
+func TestMoveUpToRequest(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
 	liftA := lift.Lift{"A", 0, []int{3}, false}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
-	liftSystem.MoveToRequest()
+	output := liftSystem.MoveToRequest()
 
-	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+	approvaltests.VerifyString(t, output)
 }
 
 func TestMoveOneDownToRequest(t *testing.T) {
@@ -62,12 +62,12 @@ func TestMoveDownToRequest(t *testing.T) {
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
-	liftSystem.MoveToRequest()
+	output := liftSystem.MoveToRequest()
 
-	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+	approvaltests.VerifyString(t, output)
 }
 
-func TestMoveToCall(t *testing.T) {
+func TestMoveDownToCall(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
 	liftA := lift.Lift{"A", 3, []int{}, false}
@@ -75,7 +75,20 @@ func TestMoveToCall(t *testing.T) {
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
 	liftSystem.AddCalls(lift.Call{1, lift.Down})
-	liftSystem.MoveToCall()
+	output := liftSystem.MoveToCall()
 
-	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+	approvaltests.VerifyString(t, output)
+}
+
+func TestMoveUpToCall(t *testing.T) {
+
+	liftSystem := lift.NewSystem()
+	liftA := lift.Lift{"A", 0, []int{}, false}
+
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.AddLifts(liftA)
+	liftSystem.AddCalls(lift.Call{3, lift.Down})
+	output := liftSystem.MoveToCall()
+
+	approvaltests.VerifyString(t, output)
 }
