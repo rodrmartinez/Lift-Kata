@@ -67,19 +67,21 @@ func (s *System) AddRequest(request Request) {
 
 // MoveToRequest ..
 func (s *System) MoveToRequest() (output string) {
+	output += PrintLiftStatus(s)
 	for i, lift := range s.lifts {
-		output += PrintLiftStatus(s)
+
 		for _, request := range lift.Requests {
 			for s.lifts[i].Floor != request {
-				s.lifts[i].Tick()
+				s.Tick()
 				reverseLiftFloors(s.floors)
 				output += PrintLiftStatus(s)
 			}
 		}
 		s.lifts[i].Tick() //Open doors
 		reverseLiftFloors(s.floors)
-		output += PrintLiftStatus(s)
 	}
+	output += PrintLiftStatus(s)
+
 	return
 }
 
@@ -117,14 +119,16 @@ func (s *System) Tick() {
 func (l *Lift) Tick() {
 
 	for _, request := range l.Requests {
-		switch {
-		case request == l.Floor:
-			l.Requests = []int{}
-			l.DoorsOpen = true
-		case request > l.Floor:
-			l.Floor += 1
-		case request < l.Floor:
-			l.Floor -= 1
+		if l.DoorsOpen == false {
+			switch {
+			case request == l.Floor:
+				l.Requests = []int{}
+				l.DoorsOpen = true
+			case request > l.Floor:
+				l.Floor += 1
+			case request < l.Floor:
+				l.Floor -= 1
+			}
 		}
 	}
 }
