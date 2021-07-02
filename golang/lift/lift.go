@@ -78,5 +78,19 @@ func (s System) CallsFor(floor int) (calls []Call) {
 
 // Tick ..
 func (s System) Tick() {
-	panic("Implement this method")
+	for i, _ := range s.lifts {
+		s.lifts[i].Tick()
+	}
+}
+
+func (l *Lift) Tick() {
+
+	for _, request := range l.Requests {
+		if request == l.Floor {
+			l.Requests = []int{}
+			l.DoorsOpen = true
+		} else {
+			l.Floor += 1
+		}
+	}
 }
