@@ -98,11 +98,14 @@ func (s System) Tick() {
 func (l *Lift) Tick() {
 
 	for _, request := range l.Requests {
-		if request == l.Floor {
+		switch {
+		case request == l.Floor:
 			l.Requests = []int{}
 			l.DoorsOpen = true
-		} else {
+		case request > l.Floor:
 			l.Floor += 1
+		case request < l.Floor:
+			l.Floor -= 1
 		}
 	}
 }
