@@ -66,3 +66,16 @@ func TestMoveDownToRequest(t *testing.T) {
 
 	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
+
+func TestMoveToCall(t *testing.T) {
+
+	liftSystem := lift.NewSystem()
+	liftA := lift.Lift{"A", 3, []int{}, false}
+
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.AddLifts(liftA)
+	liftSystem.AddCalls(lift.Call{1, lift.Down})
+	liftSystem.MoveToCall()
+
+	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
+}

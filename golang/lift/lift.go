@@ -77,6 +77,18 @@ func (s *System) MoveToRequest() {
 	}
 }
 
+// MovetoCall ..
+func (s *System) MoveToCall() {
+	for _, call := range s.calls {
+		for _, lift := range s.lifts {
+			if lift.Floor != call.Floor {
+				s.AddRequest(Request{lift.ID, call.Floor})
+				s.MoveToRequest()
+			}
+		}
+	}
+}
+
 // CallsFor ..
 func (s System) CallsFor(floor int) (calls []Call) {
 	calls = []Call{}
