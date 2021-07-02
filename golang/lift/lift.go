@@ -15,6 +15,12 @@ type Call struct {
 	Direction Direction
 }
 
+//Request
+type Request struct {
+	Lift  string
+	Floor int
+}
+
 // Lift ..
 type Lift struct {
 	ID        string
@@ -48,6 +54,15 @@ func (s *System) AddLifts(lifts ...Lift) {
 // AddCalls ..
 func (s *System) AddCalls(calls ...Call) {
 	s.calls = append(s.calls, calls...)
+}
+
+// AddRequest ..
+func (s *System) AddRequest(request Request) {
+	for i, lift := range s.lifts {
+		if lift.ID == request.Lift {
+			s.lifts[i].Requests = append(s.lifts[i].Requests, request.Floor)
+		}
+	}
 }
 
 // CallsFor ..
