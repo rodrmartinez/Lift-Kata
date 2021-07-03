@@ -56,6 +56,9 @@ func (p printer) PrintLift(lift Lift, floor int) (liftStr string) {
 
 //PrintLiftStatus
 func PrintLiftStatus(s *System) (lift string) {
+	if s.floors[0] != 0 {
+		reverseLiftFloors(s.floors)
+	}
 	lift = PrintLifts(s, NewPrinter()) + "---\n"
 	return
 }

@@ -1,5 +1,7 @@
 package lift
 
+import "fmt"
+
 // Direction ..
 type Direction int
 
@@ -69,16 +71,13 @@ func (s *System) AddRequest(request Request) {
 func (s *System) MoveToRequest() (output string) {
 	output += PrintLiftStatus(s)
 	for i, lift := range s.lifts {
-
 		for _, request := range lift.Requests {
 			for s.lifts[i].Floor != request {
 				s.Tick()
-				reverseLiftFloors(s.floors)
 				output += PrintLiftStatus(s)
 			}
 		}
 		s.lifts[i].Tick() //Open doors
-		reverseLiftFloors(s.floors)
 	}
 	output += PrintLiftStatus(s)
 	return
@@ -94,15 +93,12 @@ func (s *System) MoveToCall() (output string) {
 			if responder.Floor != lift.Floor {
 				if lift.Floor > call.Floor {
 					responder = s.lifts[i]
-					reverseLiftFloors(s.floors)
 				} else if lift.Floor < call.Floor {
 					responder = s.lifts[i]
-					reverseLiftFloors(s.floors)
 				}
 			}
 		}
 		s.AddRequest(Request{responder.ID, call.Floor})
-		reverseLiftFloors(s.floors)
 		output += s.MoveToRequest()
 	}
 	return
@@ -122,12 +118,12 @@ func (s System) CallsFor(floor int) (calls []Call) {
 // Tick ..
 func (s *System) Tick() {
 	for i, _ := range s.lifts {
+		fmt.Println(s)
 		s.lifts[i].Tick()
 	}
 }
 
 func (l *Lift) Tick() {
-
 	for _, request := range l.Requests {
 		if l.DoorsOpen == false {
 			switch {
