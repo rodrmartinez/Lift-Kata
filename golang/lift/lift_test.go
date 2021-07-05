@@ -123,3 +123,18 @@ func TestMoveManyToCall(t *testing.T) {
 
 	approvaltests.VerifyString(t, output)
 }
+
+func TestAnserManyCalls(t *testing.T) {
+
+	liftSystem := lift.NewSystem()
+	liftA := lift.Lift{"A", 0, []int{}, false, "0"}
+	liftB := lift.Lift{"B", 0, []int{}, false, "0"}
+
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.AddLifts(liftA, liftB)
+	liftSystem.AddCalls(lift.Call{3, lift.Up})
+	liftSystem.AddCalls(lift.Call{2, lift.Up})
+	output := liftSystem.MoveToCall()
+
+	approvaltests.VerifyString(t, output)
+}
