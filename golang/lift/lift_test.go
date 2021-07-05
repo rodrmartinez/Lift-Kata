@@ -9,7 +9,7 @@ import (
 
 func TestAddRequest(t *testing.T) {
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 0, []int{}, false}
+	liftA := lift.Lift{"A", 0, []int{}, false, "0"}
 	request := lift.Request{Lift: "A", Floor: 3}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
@@ -23,7 +23,7 @@ func TestAddRequest(t *testing.T) {
 func TestMoveOneToRequest(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 0, []int{3}, false}
+	liftA := lift.Lift{"A", 0, []int{3}, false, "0"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
@@ -34,7 +34,7 @@ func TestMoveOneToRequest(t *testing.T) {
 func TestMoveUpToRequest(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 0, []int{3}, false}
+	liftA := lift.Lift{"A", 0, []int{3}, false, "0"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
@@ -46,7 +46,7 @@ func TestMoveUpToRequest(t *testing.T) {
 func TestMoveOneDownToRequest(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 3, []int{1}, false}
+	liftA := lift.Lift{"A", 3, []int{1}, false, "3"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
@@ -58,7 +58,7 @@ func TestMoveOneDownToRequest(t *testing.T) {
 func TestMoveDownToRequest(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 3, []int{1}, false}
+	liftA := lift.Lift{"A", 3, []int{1}, false, "3"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
@@ -70,7 +70,7 @@ func TestMoveDownToRequest(t *testing.T) {
 func TestMoveDownToCall(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 3, []int{}, false}
+	liftA := lift.Lift{"A", 3, []int{}, false, "3"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
@@ -83,7 +83,7 @@ func TestMoveDownToCall(t *testing.T) {
 func TestMoveUpToCall(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 0, []int{}, false}
+	liftA := lift.Lift{"A", 0, []int{}, false, "0"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA)
@@ -96,8 +96,8 @@ func TestMoveUpToCall(t *testing.T) {
 func TestMoveManyLiftsToRequests(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 0, []int{}, false}
-	liftB := lift.Lift{"B", 0, []int{}, false}
+	liftA := lift.Lift{"A", 0, []int{}, false, "0"}
+	liftB := lift.Lift{"B", 0, []int{}, false, "0"}
 	requestA := lift.Request{Lift: "A", Floor: 3}
 	requestB := lift.Request{Lift: "B", Floor: 2}
 
@@ -113,12 +113,12 @@ func TestMoveManyLiftsToRequests(t *testing.T) {
 func TestMoveManyToCall(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 3, []int{}, false}
-	liftB := lift.Lift{"B", 2, []int{}, false}
+	liftA := lift.Lift{"A", 0, []int{}, false, "0"}
+	liftB := lift.Lift{"B", 0, []int{}, false, "0"}
 
 	liftSystem.AddFloors(0, 1, 2, 3)
 	liftSystem.AddLifts(liftA, liftB)
-	liftSystem.AddCalls(lift.Call{0, lift.Up})
+	liftSystem.AddCalls(lift.Call{3, lift.Up})
 	output := liftSystem.MoveToCall()
 
 	approvaltests.VerifyString(t, output)

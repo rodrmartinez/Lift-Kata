@@ -1,6 +1,8 @@
 package lift
 
-import "fmt"
+import (
+	"strconv"
+)
 
 // Direction ..
 type Direction int
@@ -29,6 +31,7 @@ type Lift struct {
 	Floor     int
 	Requests  []int
 	DoorsOpen bool
+	Monitor   string
 }
 
 // System ..
@@ -78,6 +81,7 @@ func (s *System) MoveToRequest() (output string) {
 			}
 		}
 		s.lifts[i].Tick() //Open doors
+
 	}
 	output += PrintLiftStatus(s)
 	return
@@ -91,9 +95,10 @@ func (s *System) MoveToCall() (output string) {
 		responder = s.lifts[0]
 		for i, lift := range s.lifts {
 			if responder.Floor != lift.Floor {
-				if lift.Floor > call.Floor {
+				switch {
+				case lift.Floor > call.Floor:
 					responder = s.lifts[i]
-				} else if lift.Floor < call.Floor {
+				case lift.Floor < call.Floor:
 					responder = s.lifts[i]
 				}
 			}
@@ -118,7 +123,6 @@ func (s System) CallsFor(floor int) (calls []Call) {
 // Tick ..
 func (s *System) Tick() {
 	for i, _ := range s.lifts {
-		fmt.Println(s)
 		s.lifts[i].Tick()
 	}
 }
@@ -130,10 +134,13 @@ func (l *Lift) Tick() {
 			case request == l.Floor:
 				l.Requests = []int{}
 				l.DoorsOpen = true
+				l.Monitor = "*"
 			case request > l.Floor:
 				l.Floor += 1
+				l.Monitor = strconv.Itoa(l.Floor)
 			case request < l.Floor:
 				l.Floor -= 1
+				l.Monitor = strconv.Itoa(l.Floor)
 			}
 		}
 	}

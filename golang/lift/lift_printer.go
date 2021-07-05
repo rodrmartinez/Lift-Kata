@@ -55,11 +55,23 @@ func (p printer) PrintLift(lift Lift, floor int) (liftStr string) {
 }
 
 //PrintLiftStatus
-func PrintLiftStatus(s *System) (lift string) {
+func PrintLiftStatus(s *System) (system string) {
 	if s.floors[0] != 0 {
 		reverseLiftFloors(s.floors)
 	}
-	lift = PrintLifts(s, NewPrinter()) + "---\n"
+	system = PrintMonitor(s) + PrintLifts(s, NewPrinter()) + "---\n"
+	return
+}
+
+//PrintMonitor
+func PrintMonitor(s *System) (monitors string) {
+	floorNumberLength := calculateFloorNumberLength(s.floors)
+
+	monitors = "M" + whiteSpace(2-len(s.calls)) + whiteSpace(floorNumberLength) + whiteSpace(3)
+	for _, lift := range s.lifts {
+		monitors += fmt.Sprintf(" %s", lift.Monitor) + whiteSpace(3)
+	}
+	monitors += "\n"
 	return
 }
 
