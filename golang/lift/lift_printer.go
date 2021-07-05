@@ -70,6 +70,7 @@ func PrintMonitor(s *System) (monitors string) {
 	monitors = "M" + whiteSpace(2-len(s.calls)) + whiteSpace(floorNumberLength) + whiteSpace(3)
 	for _, lift := range s.lifts {
 		current := fmt.Sprintf(" %s", lift.Monitor)
+
 		for _, call := range s.calls {
 			if call.Floor == lift.Floor && lift.DoorsOpen == true {
 				current = " " + printCallDirection(call)
