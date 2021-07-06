@@ -20,17 +20,6 @@ func TestAddRequest(t *testing.T) {
 
 }
 
-func TestMoveOneToRequest(t *testing.T) {
-
-	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 0, []int{3}, false, "0"}
-
-	liftSystem.AddFloors(0, 1, 2, 3)
-	liftSystem.AddLifts(liftA)
-	liftSystem.Tick()
-
-	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
-}
 func TestMoveUpToRequest(t *testing.T) {
 
 	liftSystem := lift.NewSystem()
@@ -41,18 +30,6 @@ func TestMoveUpToRequest(t *testing.T) {
 	output := liftSystem.MoveToRequest()
 
 	approvaltests.VerifyString(t, output)
-}
-
-func TestMoveOneDownToRequest(t *testing.T) {
-
-	liftSystem := lift.NewSystem()
-	liftA := lift.Lift{"A", 3, []int{1}, false, "3"}
-
-	liftSystem.AddFloors(0, 1, 2, 3)
-	liftSystem.AddLifts(liftA)
-	liftSystem.Tick()
-
-	approvaltests.VerifyString(t, lift.PrintLifts(liftSystem, lift.NewPrinter()))
 }
 
 func TestMoveDownToRequest(t *testing.T) {
@@ -135,6 +112,23 @@ func TestAnserManyCalls(t *testing.T) {
 	liftSystem.AddCalls(lift.Call{3, lift.Up})
 	liftSystem.AddCalls(lift.Call{2, lift.Up})
 	output := liftSystem.MoveToCall()
+
+	approvaltests.VerifyString(t, output)
+}
+
+func TestMoveOneLiftToManyRequests(t *testing.T) {
+
+	liftSystem := lift.NewSystem()
+	liftA := lift.Lift{"A", 0, []int{}, false, "0"}
+	liftB := lift.Lift{"B", 0, []int{}, false, "0"}
+	requestA := lift.Request{Lift: "A", Floor: 3}
+	requestB := lift.Request{Lift: "A", Floor: 2}
+
+	liftSystem.AddFloors(0, 1, 2, 3)
+	liftSystem.AddLifts(liftA, liftB)
+	liftSystem.AddRequest(requestA)
+	liftSystem.AddRequest(requestB)
+	output := liftSystem.MoveToRequest()
 
 	approvaltests.VerifyString(t, output)
 }

@@ -1,6 +1,7 @@
 package lift
 
 import (
+	"sort"
 	"strconv"
 )
 
@@ -74,16 +75,18 @@ func (s *System) AddRequest(request Request) {
 func (s *System) MoveToRequest() (output string) {
 	output += PrintLiftStatus(s)
 	for i, lift := range s.lifts {
+		sort.Ints(s.lifts[i].Requests) //sort lift request to answer in order
 		for _, request := range lift.Requests {
 			for s.lifts[i].Floor != request {
-				s.Tick()
+				s.lifts[i].Tick(request)
 				output += PrintLiftStatus(s)
 			}
+			s.lifts[i].Tick(request) //Open doors
+			output += PrintLiftStatus(s)
+			s.lifts[i].DoorsOpen = false //Close doors
+			output += PrintLiftStatus(s)
 		}
-		s.lifts[i].Tick() //Open doors
-
 	}
-	output += PrintLiftStatus(s)
 	return
 }
 
@@ -120,28 +123,17 @@ func (s System) CallsFor(floor int) (calls []Call) {
 	return calls
 }
 
-// Tick ..
-func (s *System) Tick() {
-	for i, _ := range s.lifts {
-		s.lifts[i].Tick()
-	}
-}
-
-func (l *Lift) Tick() {
-	for _, request := range l.Requests {
-		if l.DoorsOpen == false {
-			switch {
-			case request == l.Floor:
-				l.Requests = []int{}
-				l.DoorsOpen = true
-				l.Monitor = "*"
-			case request > l.Floor:
-				l.Floor += 1
-				l.Monitor = strconv.Itoa(l.Floor)
-			case request < l.Floor:
-				l.Floor -= 1
-				l.Monitor = strconv.Itoa(l.Floor)
-			}
-		}
+//Tick
+func (l *Lift) Tick(request int) {
+	switch {
+	case request == l.Floor:
+		l.DoorsOpen = true
+		l.Monitor = "*"
+	case request > l.Floor:
+		l.Floor += 1
+		l.Monitor = strconv.Itoa(l.Floor)
+	case request < l.Floor:
+		l.Floor -= 1
+		l.Monitor = strconv.Itoa(l.Floor)
 	}
 }
