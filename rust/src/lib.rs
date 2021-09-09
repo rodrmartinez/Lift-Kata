@@ -31,6 +31,18 @@ impl Lift{
             monitor,
         }
     }
+    fn tick(&mut self, request: u32){
+        if request == self.floor{
+            self.doors_open = true;
+            self.monitor = String::from("*");
+        } else if request > self.floor{
+            self.floor += 1;
+            self.monitor = self.floor.to_string();
+        } else if request < self.floor{
+            self.floor -=1;
+            self.monitor = self.floor.to_string();
+        }
+    }
 }
 
 impl Call{
@@ -79,6 +91,17 @@ impl System{
             }
         }
     }
+    fn move_to_request(&mut self){
+         for lift in &mut self.lifts{
+            let mut requests = lift.requests.to_vec();
+            requests.sort();
+            for request in requests{
+                while lift.floor != request {
+                    lift.tick(request)
+                }
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -123,5 +146,26 @@ mod test {
          //test requests
         assert_eq!(vec![2,4], system.lifts[0].requests);
 
+    }
+    #[test]
+    fn test_move_up_to_request(){ 
+        let mut system = System::default();
+        system.add_floors(&mut vec![0,1,2,3]);
+        system.add_lifts(&mut  vec![Lift::new(String::from("A"), 0, Vec::new(),false,String::from("0"))]);
+        system.add_requests(&mut Request::new(String::from("A"), 2));
+        system.move_to_request();
+    
+        //test lifts
+        assert_eq!(2, system.lifts[0].floor);
+    }
+       #[test]
+    fn test_move_down_to_request(){ 
+        let mut system = System::default();
+        system.add_floors(&mut vec![0,1,2,3]);
+        system.add_lifts(&mut  vec![Lift::new(String::from("A"), 3, vec![1],false,String::from("3"))]);
+        system.move_to_request();
+    
+        //test lifts
+        assert_eq!(1, system.lifts[0].floor);
     }
 }
