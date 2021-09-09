@@ -1,20 +1,23 @@
+#[derive(Clone)]
 struct Lift {
-    id: String,
+    id: char,
     floor:     u32,
 	requests:  Vec<u32>,
 	doors_open: bool,
 	monitor: String,
 }
 
+#[derive(Clone)]
 struct Call{
     floor: u32,
     direction: String
 }
 struct Request {
-    lift: String,
+    lift: char,
     floor: u32
 }
 
+#[derive(Clone)]
 struct System {
     floors: Vec<u32>,
     lifts:  Vec<Lift>,
@@ -22,7 +25,7 @@ struct System {
 }
 
 impl Lift{
-    fn new(id: String, floor: u32, requests: Vec<u32>, doors_open: bool, monitor: String) -> Lift{
+    fn new(id: char, floor: u32, requests: Vec<u32>, doors_open: bool, monitor: String) -> Lift{
         Lift{
             id,
             floor,
@@ -55,7 +58,7 @@ impl Call{
 }
 
 impl Request{
-    fn new(lift: String, floor: u32) -> Request{
+    fn new(lift: char, floor: u32) -> Request{
         Request{
             lift,
             floor,
@@ -102,6 +105,19 @@ impl System{
             }
         }
     }
+    fn move_to_call(&mut self){
+        let system = self.clone();
+        for call in system.calls{
+            let mut responder = system.lifts[0].id;
+            for lift in &system.lifts{
+                if lift.floor == 0 {
+                    responder = lift.id
+                }
+            }
+            self.add_requests(&mut Request::new(responder, call.floor));
+            self.move_to_request()
+        }
+    }
 }
 
 #[cfg(test)]
@@ -118,7 +134,7 @@ mod test {
         system.add_floors(&mut floors);
 
         //add lifts to the system
-        let mut lifts = vec![Lift::new(String::from("A"), 0, Vec::new(),false,String::from("0"))];
+        let mut lifts = vec![Lift::new('A', 0, Vec::new(),false,String::from("0"))];
         system.add_lifts(&mut lifts);
 
         //add calls to the system
@@ -126,13 +142,13 @@ mod test {
         system.add_calls(&mut calls);
 
         //add requests to the system
-        let mut request1 = Request::new(String::from("A"), 2);
+        let mut request1 = Request::new('A', 2);
         system.add_requests(&mut request1);
-        let mut request2 = Request::new(String::from("A"), 4);
+        let mut request2 = Request::new('A', 4);
         system.add_requests(&mut request2);
     
         //test lifts
-        assert_eq!("A", system.lifts[0].id);
+        assert_eq!('A', system.lifts[0].id);
         assert_eq!(0, system.lifts[0].floor);
         assert_eq!(false, system.lifts[0].doors_open);
 
@@ -151,19 +167,30 @@ mod test {
     fn test_move_up_to_request(){ 
         let mut system = System::default();
         system.add_floors(&mut vec![0,1,2,3]);
-        system.add_lifts(&mut  vec![Lift::new(String::from("A"), 0, Vec::new(),false,String::from("0"))]);
-        system.add_requests(&mut Request::new(String::from("A"), 2));
+        system.add_lifts(&mut  vec![Lift::new('A', 0, Vec::new(),false,String::from("0"))]);
+        system.add_requests(&mut Request::new('A', 2));
         system.move_to_request();
     
         //test lifts
         assert_eq!(2, system.lifts[0].floor);
     }
-       #[test]
+    #[test]
     fn test_move_down_to_request(){ 
         let mut system = System::default();
         system.add_floors(&mut vec![0,1,2,3]);
-        system.add_lifts(&mut  vec![Lift::new(String::from("A"), 3, vec![1],false,String::from("3"))]);
+        system.add_lifts(&mut  vec![Lift::new('A', 3, vec![1],false,String::from("3"))]);
         system.move_to_request();
+    
+        //test lifts
+        assert_eq!(1, system.lifts[0].floor);
+    }
+    #[test]
+    fn test_move_to_call(){ 
+        let mut system = System::default();
+        system.add_floors(&mut vec![0,1,2,3]);
+        system.add_lifts(&mut  vec![Lift::new('A', 3, vec![1],false,String::from("3"))]);
+        system.add_calls(&mut vec![Call::new(1, String::from("Down"))]);
+        system.move_to_call();
     
         //test lifts
         assert_eq!(1, system.lifts[0].floor);
