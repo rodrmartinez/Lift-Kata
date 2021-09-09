@@ -10,6 +10,10 @@ struct Call{
     floor: u32,
     direction: String
 }
+struct Request {
+    lift: String,
+    floor: u32
+}
 
 struct System {
     floors: Vec<u32>,
@@ -38,6 +42,16 @@ impl Call{
     }
 }
 
+impl Request{
+    fn new(lift: String, floor: u32) -> Request{
+        Request{
+            lift,
+            floor,
+        }
+    }
+}
+
+
 impl Default for System {
     fn default()-> System {
         System{
@@ -57,6 +71,13 @@ impl System{
     }
     fn add_calls(&mut self, calls: &mut Vec<Call>){
         self.calls.append(calls)
+    }
+    fn add_requests(&mut self, request: &mut Request){
+        for lift in &mut self.lifts{
+            if lift.id == request.lift {
+                lift.requests.push(request.floor)
+            }
+        }
     }
 }
 
@@ -80,6 +101,12 @@ mod test {
         //add calls to the system
         let mut calls = vec![Call::new(3, String::from("Up"))];
         system.add_calls(&mut calls);
+
+        //add requests to the system
+        let mut request1 = Request::new(String::from("A"), 2);
+        system.add_requests(&mut request1);
+        let mut request2 = Request::new(String::from("A"), 4);
+        system.add_requests(&mut request2);
     
         //test lifts
         assert_eq!("A", system.lifts[0].id);
@@ -92,5 +119,9 @@ mod test {
 
         //test floor
         assert_eq!(vec![0,1,2,3],system.floors);
+
+         //test requests
+        assert_eq!(vec![2,4], system.lifts[0].requests);
+
     }
 }
