@@ -1,4 +1,4 @@
-pub mod print_lifts;
+pub mod printer;
 
 use std::io::prelude::*;
 use std::fs::File;
@@ -23,7 +23,7 @@ struct Request {
 }
 
 #[derive(Clone)]
-struct System {
+pub struct System {
     floors: Vec<u32>,
     lifts:  Vec<Lift>,
     calls:  Vec<Call>
@@ -99,12 +99,13 @@ impl System{
         }
     }
     fn move_to_request(&mut self){
-         for lift in &mut self.lifts{
+        let system = self;
+        for lift in system.lifts.iter_mut(){
             let mut requests = lift.requests.to_vec();
             requests.sort();
             for request in requests{
                 while lift.floor != request {
-                    lift.tick(request)
+                    lift.tick(request);
                 }
             }
         }
