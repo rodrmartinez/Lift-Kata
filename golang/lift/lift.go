@@ -1,5 +1,10 @@
 package lift
 
+import (
+	"sort"
+	"strconv"
+)
+
 // Direction ..
 type Direction int
 
@@ -27,6 +32,7 @@ type Lift struct {
 	Floor     int
 	Requests  []int
 	DoorsOpen bool
+	Monitor   string
 }
 
 // System ..
@@ -65,6 +71,47 @@ func (s *System) AddRequest(request Request) {
 	}
 }
 
+// MoveToRequest ..
+func (s *System) MoveToRequest() (output string) {
+	output += PrintLiftStatus(s)
+	for i, lift := range s.lifts {
+		sort.Ints(s.lifts[i].Requests) //sort lift request to answer in order
+		for _, request := range lift.Requests {
+			for s.lifts[i].Floor != request {
+				s.lifts[i].Tick(request)
+				output += PrintLiftStatus(s)
+			}
+			s.lifts[i].Tick(request) //Open doors
+			output += PrintLiftStatus(s)
+			s.lifts[i].DoorsOpen = false //Close doors
+			output += PrintLiftStatus(s)
+		}
+	}
+	return
+}
+
+// MoveToCall ..
+func (s *System) MoveToCall() (output string) {
+	output += PrintLiftStatus(s)
+	var responder Lift
+	for _, call := range s.calls {
+		responder = s.lifts[0]
+		for i, lift := range s.lifts {
+			if responder.Floor != lift.Floor {
+				switch {
+				case lift.Floor > call.Floor:
+					responder = s.lifts[i]
+				case lift.Floor < call.Floor:
+					responder = s.lifts[i]
+				}
+			}
+		}
+		s.AddRequest(Request{responder.ID, call.Floor})
+		output += s.MoveToRequest()
+	}
+	return
+}
+
 // CallsFor ..
 func (s System) CallsFor(floor int) (calls []Call) {
 	calls = []Call{}
@@ -76,7 +123,17 @@ func (s System) CallsFor(floor int) (calls []Call) {
 	return calls
 }
 
-// Tick ..
-func (s System) Tick() {
-	panic("Implement this method")
+//Tick
+func (l *Lift) Tick(request int) {
+	switch {
+	case request == l.Floor:
+		l.DoorsOpen = true
+		l.Monitor = "*"
+	case request > l.Floor:
+		l.Floor += 1
+		l.Monitor = strconv.Itoa(l.Floor)
+	case request < l.Floor:
+		l.Floor -= 1
+		l.Monitor = strconv.Itoa(l.Floor)
+	}
 }
